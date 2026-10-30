@@ -1,4 +1,4 @@
-package com.sistema.examenes.sistema_examenes_backend;
+package com.sistema.examenes;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

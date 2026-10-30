@@ -3,34 +3,25 @@ package com.sistema.examenes.entidades;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 /**
- * Representa un usuario dentro del sistema de exámenes.
- * 
- * Esta entidad almacena la información básica de un usuario, incluyendo su nombre,
- * apellido, correo electrónico, teléfono, nombre de usuario, contraseña, estado de habilitación
- * y perfil. Además, mantiene una relación con los roles asignados al usuario.
- * 
+ * Representa un usuario dentro del sistema.
+ *
  * Campos:
  * - id: Identificador único del usuario (clave primaria, autogenerado).
- * - username: Nombre de usuario para autenticación.
- * - password: Contraseña del usuario.
- * - nombre: Nombre real del usuario.
- * - apellido: Apellido del usuario.
- * - email: Correo electrónico del usuario.
- * - telefono: Número de teléfono del usuario.
- * - enabled: Indica si el usuario está habilitado o no.
- * - perfil: Ruta o nombre de la imagen de perfil del usuario.
- * - usuarioRoles: Conjunto de roles asociados al usuario.
- * 
- * Relación @OneToMany:
- * La anotación {@code @OneToMany} en el campo {@code usuarioRoles} indica que un usuario puede tener
- * múltiples roles asociados (relación uno a muchos). El atributo {@code mappedBy = "usuario"} especifica
- * que la relación está mapeada por el campo "usuario" en la entidad {@code UsuarioRol}. 
- * El {@code cascade = CascadeType.ALL} permite que las operaciones realizadas sobre el usuario (guardar, eliminar, etc.)
- * se propaguen a los roles asociados. El {@code fetch = FetchType.EAGER} indica que los roles se cargarán 
- * automáticamente junto con el usuario.
+ * - username: Nombre de usuario para autenticación (único).
+ * - password: Contraseña (se guarda cifrada con BCrypt y nunca se devuelve en el JSON).
+ * - nombre / apellido: Datos personales.
+ * - email: Correo electrónico (único).
+ * - telefono: Número de teléfono.
+ * - enabled: Indica si el usuario está habilitado.
+ * - perfil: Ruta o nombre de la imagen de perfil.
+ * - usuarioRoles: Roles asociados al usuario ({@code mappedBy = "usuario"} en {@link UsuarioRol}).
  */
 @Entity
 @Table(name = "usuarios")
@@ -40,16 +31,48 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    private String username;;
+    @NotBlank
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
+    @NotBlank
     private String nombre;
     private String apellido;
+
+    @Email
+    @NotBlank
+    @Column(nullable = false, unique = true)
     private String email;
-    private String telefono; 
+
+    private String telefono;
     private boolean enabled = true;
     private String perfil;
-    
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "usuario")
     private Set<UsuarioRol> usuarioRoles = new HashSet<>();
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public String getPerfil() { return perfil; }
+    public void setPerfil(String perfil) { this.perfil = perfil; }
+    public Set<UsuarioRol> getUsuarioRoles() { return usuarioRoles; }
+    public void setUsuarioRoles(Set<UsuarioRol> usuarioRoles) { this.usuarioRoles = usuarioRoles; }
 }
